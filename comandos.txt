@@ -1,0 +1,13 @@
+//criação models+migrations
+
+php artisan make:model DescriptionRelease --migration
+php artisan make:model PaymentInput --migration
+php artisan make:model PaymentOutput --migration
+
+
+//criação controllets+resourses
+
+php artisan make:controller DescriptionReleaseController --resource
+php artisan make:controller PaymentInputController --resource
+php artisan make:controller PaymentOutputController --resource
+php artisan make:controller HomeController
