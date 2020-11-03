@@ -97,7 +97,6 @@ $(document).ready(function() {
         $('.form-control').removeClass( "is-invalid" ); /* remove red border class */
         $('.alert-success').hide().html(''); /* hide span.success */
     }
-        
     //fim - config inputs
 
     //inicio - data table config
@@ -145,7 +144,7 @@ $(document).ready(function() {
     $('body').on('click', '.editItem', function () {
         var item_id = $(this).data('id');
 
-      $.get("{{ route('payment_inputs.index') }}" +'/' + item_id +'/edit', function (data) {
+        $.get("{{ route('payment_inputs.index') }}" +'/' + item_id +'/edit', function (data) {
             cleanValidations();
             $('#modelHeading').html("Editar Recebimento");
             $('#saveBtn').val("edit-input");

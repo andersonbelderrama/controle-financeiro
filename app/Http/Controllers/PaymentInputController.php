@@ -48,7 +48,7 @@ class PaymentInputController extends Controller
             $coluna = 'payment_date';
         }
 
-        if (!empty($data_inicial)) {
+        if (!empty($data_inicial && $data_final)) {
 
             //filter
             $payment_inputs = DB::table('payment_inputs')
@@ -56,7 +56,6 @@ class PaymentInputController extends Controller
             ->select('payment_inputs.id','description_releases.description', 'payment_inputs.amount', 'payment_inputs.due_date', 'payment_inputs.payment_date')
             ->orderBy('payment_inputs.id', 'desc')
             ->whereBetween('payment_inputs.'.$coluna, [$data_inicial, $data_final])
-            //->where('payment_inputs.'.$coluna, '=', $data_inicial) //**FAST TEST**
             ->get();
 
         }else{
@@ -117,9 +116,8 @@ class PaymentInputController extends Controller
             'description_id' => 'required',
             'amount' => 'required',
             'due_date' => 'required',
-            //'payment_date' => 'required'
         ]);
-        
+
         
         if ($request->payment_date != null) {
             $payment_date = implode('-', array_reverse(explode('/', $request->payment_date)));

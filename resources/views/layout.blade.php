@@ -226,7 +226,7 @@
                 <a href="{{ route('payment_inputs.index') }}" class="nav-link {{ Request::url() == route('payment_inputs.index') ? 'active' : '' }}" >
                     <i class="nav-icon fas fa-dollar-sign"></i>
                     <p>
-                    Entradas
+                    Recebimentos
                     </p>
                 </a>
             </li>
@@ -235,7 +235,7 @@
                 <a href="{{ route('payment_outputs.index') }}" class="nav-link {{ Request::url() == route('payment_outputs.index') ? 'active' : '' }}">
                     <i class="nav-icon fas fa-cash-register"></i>
                     <p>
-                    Saídas
+                    Pagamentos
                     </p>
                 </a>
             </li>

@@ -45,7 +45,7 @@ class PaymentOutputController extends Controller
             $coluna = 'payment_date';
         }
 
-        if (!empty($data_inicial)) {
+        if (!empty($data_inicial  && $data_final)) {
 
             //filter
             $payment_outputs = DB::table('payment_outputs')
@@ -53,7 +53,6 @@ class PaymentOutputController extends Controller
             ->select('payment_outputs.id','description_releases.description', 'payment_outputs.amount', 'payment_outputs.due_date', 'payment_outputs.payment_date')
             ->orderBy('payment_outputs.id', 'desc')
             ->whereBetween('payment_outputs.'.$coluna, [$data_inicial, $data_final])
-            //->where('payment_outputs.'.$coluna, '=', $data_inicial) //**FAST TEST**
             ->get();
 
         }else{
@@ -106,40 +105,32 @@ class PaymentOutputController extends Controller
      */
     public function store(Request $request)
     {
-
-         $validator = Validator::make($request->all(), [
-             'description_id' => 'required',
-             'amount' => 'required',
-             'due_date' => 'required',
-             //'payment_date' => 'required'
-         ]);
+        $validator = Validator::make($request->all(), [
+            'description_id' => 'required',
+            'amount' => 'required',
+            'due_date' => 'required',
+        ]);
 
 
-         if ($validator->passes()) {
+        if ($request->payment_date != null) {
+            $payment_date = implode('-', array_reverse(explode('/', $request->payment_date)));
+        }else{
+            $payment_date = $request->payment_date = null;
+        }
 
+        if ($validator->passes()) {
 
-            if ($request->payment_date != null) {
-                PaymentOutput::updateOrCreate(['id' => $request->item_id],
-                ['description_id' => $request->description_id,
-                'amount' => str_replace(['R$','.',','],['','','.'],$request->amount),
-                'due_date' => implode('-', array_reverse(explode('/', $request->due_date))),
-                'payment_date' => implode('-', array_reverse(explode('/', $request->payment_date)))
+            PaymentOutput::updateOrCreate(['id' => $request->item_id],
+            ['description_id' => $request->description_id,
+            'amount' => str_replace(['R$','.',','],['','','.'],$request->amount),
+            'due_date' => implode('-', array_reverse(explode('/', $request->due_date))),
+            'payment_date' => $payment_date
             ]);  
-            }else{
-                PaymentOutput::updateOrCreate(['id' => $request->item_id],
-                ['description_id' => $request->description_id,
-                'amount' => str_replace(['R$','.',','],['','','.'],$request->amount),
-                'due_date' => implode('-', array_reverse(explode('/', $request->due_date))),
-                'payment_date' => $request->payment_date = null
-            ]);  
-            }
 
-            
             return response()->json(['success'=>'Registro inserido com sucesso!']);
-			
-         }
+        }
 
-         return response()->json(['error'=>$validator->errors()]);
+        return response()->json(['errors'=>$validator->errors()]);
     }
 
     /**
@@ -162,7 +153,6 @@ class PaymentOutputController extends Controller
             $payment_output->payment_date = "";
         }
 
-        //dd($payment_output);
 
         return response()->json($payment_output);
     }
