@@ -1,6 +1,6 @@
 @extends('layout')
 
-@section('title', 'Entradas')
+@section('title', 'Recebimentos')
 
 @section('css')
 
@@ -42,35 +42,9 @@
 
 <script>
 $(document).ready(function() {
-    //inicializando select2
-    //$('.select2').select2();
-    $('.select2').select2({
-      theme: 'bootstrap4'
-    });
-    //Date picker
-    $('#data_inicial').datepicker({ 
-        dateFormat: 'dd/mm/yy',
-        dayNames: ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'],
-        dayNamesMin: ['D','S','T','Q','Q','S','S','D'],
-        dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb','Dom'],
-        monthNames: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
-        monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
-        nextText: 'Próximo',
-        prevText: 'Anterior'
-    });
-    $('#data_final').datepicker({ 
-        dateFormat: 'dd/mm/yy',
-        dayNames: ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'],
-        dayNamesMin: ['D','S','T','Q','Q','S','S','D'],
-        dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb','Dom'],
-        monthNames: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
-        monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
-        nextText: 'Próximo',
-        prevText: 'Anterior'
-    });
-    
-    //filtro regras
-    $('#filter-date').click(function(){
+
+     //condição do filtro & toggle
+     $('#filter-date').click(function(){
         $('.filter-date').slideToggle();
     });
     $('#filter-clear').click(function(){
@@ -91,25 +65,40 @@ $(document).ready(function() {
         }
     });
 
- 
+    //date picker
+    $('.date-picker').datepicker({ 
+        dateFormat: 'dd/mm/yy',
+        dayNames: ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'],
+        dayNamesMin: ['D','S','T','Q','Q','S','S','D'],
+        dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb','Dom'],
+        monthNames: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+        monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+        nextText: 'Próximo',
+        prevText: 'Anterior'
+    });
 
-    
+    $('#filter-submit').click(function(){
+        table.draw(true);
+    });
 
-    
-    //maskmoney
+    //inicio - config inputs
+    $('.select2').select2({
+    theme: 'bootstrap4'
+    });
+
     $("#amount").maskMoney({prefix:'R$ ', allowNegative: true, thousands:'.', decimal:',', affixesStay: true}); 
-    //Datemask dd/mm/yyyy
+
     $('#payment_date').inputmask({ alias: "datetime", inputFormat: "dd/mm/yyyy", placeholder: "DD/MM/AAAA"});
     $('#due_date').inputmask({ alias: "datetime", inputFormat: "dd/mm/yyyy", placeholder: "DD/MM/AAAA"});
-
-
     
-    //validando token
-    $.ajaxSetup({
-          headers: {
-              'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-          }
-    });
+    /* clean validations */
+    function cleanValidations(){
+        $('.error').hide().html(''); /* hide span.error */ 
+        $('.form-control').removeClass( "is-invalid" ); /* remove red border class */
+        $('.alert-success').hide().html(''); /* hide span.success */
+    }
+        
+    //fim - config inputs
 
     //inicio - data table config
     var table = $('#payment_inputs').DataTable({
@@ -117,7 +106,7 @@ $(document).ready(function() {
         serverSide: true,
         responsive: true,
         ajax: {
-            url: '{!! route('payment_inputs.data') !!}',
+            url: '{{ route('payment_inputs.data') }}',
             type: 'GET',
             data: function (d) {
             d.coluna = $('#coluna').val();
@@ -139,19 +128,15 @@ $(document).ready(function() {
         ]
     }); 
     //fim - data table config
-    $('#filter-submit').click(function(){
-        table.draw(true);
-    });
 
     //inicio - criar novo registro
     $('#createNewItem').click(function () {
-        $(".print-error-msg").find("ul").html('');
-        $(".print-error-msg").css('display','none');
+        cleanValidations();
         $('.select2').val(null).trigger('change');
         $('#saveBtn').val("create-item");
         $('#item_id').val('');
         $('#ItemForm').trigger("reset");
-        $('#modelHeading').html("Adicionar Nova Entrada");
+        $('#modelHeading').html("Adicionar Novo Recebimento");
         $('#ajaxModel').modal('show');
     });
     //fim - criar novo registro
@@ -161,16 +146,15 @@ $(document).ready(function() {
         var item_id = $(this).data('id');
 
       $.get("{{ route('payment_inputs.index') }}" +'/' + item_id +'/edit', function (data) {
-            $(".print-error-msg").find("ul").html('');
-            $(".print-error-msg").css('display','none');
-            $('#modelHeading').html("Editar Entrada");
+            cleanValidations();
+            $('#modelHeading').html("Editar Recebimento");
             $('#saveBtn').val("edit-input");
             $('#ajaxModel').modal('show');
-            $('#item_id').val(data.id); //campos
+            $('#item_id').val(data.id); 
             $(".select2").val(data.description_id).trigger('change'); 
-            $('#amount').val(data.amount); //campos
-            $('#due_date').val(data.due_date); //campo
-            $('#payment_date').val(data.payment_date); //campos  
+            $('#amount').val(data.amount); 
+            $('#due_date').val(data.due_date); 
+            $('#payment_date').val(data.payment_date); 
         })
     });
    //fim - editar registro
@@ -178,34 +162,23 @@ $(document).ready(function() {
    //inicio - store registro
    $('#saveBtn').click(function (e) {
         e.preventDefault();
-
-        //get inputs
-        var _token = $("input[name='_token']").val();
-        var description_id = $("input[name='description_id']").val();
-        var amount = $("input[name='amount']").val();
-        var due_date = $("input[name='due_date']").val();
-        var payment_date = $("input[name='payment_date']").val();
+        cleanValidations();
+        var dados = $('#ItemForm').serialize();
     
         $.ajax({
-            data: $('#ItemForm').serialize(),
-            //data: {_token:_token, type:type, description:description},
+            data: dados,
             url: "{{ route('payment_inputs.store') }}",
             type: "POST",
             dataType: 'json',
-            success: function (data) {
-                //alert(data.success);
-                //console.log('Success:', data.success);
-                //console.log('Error:', data.error);
-
-                if($.isEmptyObject(data.error)){
-                    //alert(data.success);
-
+            success: function (response) {
+                if(response.errors == null){ 
                     Swal.fire({
                         icon: 'success',
-                        title: data.success,
+                        title: response.success,
                         showConfirmButton: false,
                         timer: 2000
                     });
+                    
                     $('.select2').val(null).trigger('change');
                     $('#ItemForm').trigger("reset");
                     $('#ajaxModel').modal('hide');
@@ -213,24 +186,13 @@ $(document).ready(function() {
                     table.draw();
 
                 }else{
-                    printErrorMsg(data.error);
-                    $('#saveBtn').html('Salvar');
+                    $.each(response.errors, function(key, value){
+                        $('#'+key).addClass( "is-invalid" );
+                        $('#'+key+'-error').show().append(value);
+                    });
                 }
-            }   ,
-                error: function (data) {
-                    console.log('Error:', data);
-                    $('#saveBtn').html('Salvar');
-                }
+            },      
         });
-
-        function printErrorMsg (msg) {
-            $(".print-error-msg").find("ul").html('');
-            $(".print-error-msg").css('display','block');
-            $.each( msg, function( key, value ) {
-                $(".print-error-msg").find("ul").append('<li>'+value+'</li>');
-            });
-        }
-
     });
     //fim - store registro
 
@@ -246,7 +208,6 @@ $(document).ready(function() {
         },
         buttonsStyling: false
         });
-        //confirm("Are You sure want to delete !");
 
         swalWithBootstrapButtons.fire({
         title: 'Você tem certeza?',
@@ -277,10 +238,7 @@ $(document).ready(function() {
             )
 
 
-        } else if (
-            /* Read more about handling dismissals below */
-            result.dismiss === Swal.DismissReason.cancel
-        ) {
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
             swalWithBootstrapButtons.fire(
             'Cancelado',
             'Seu registro está seguro:)',
@@ -322,7 +280,7 @@ $(document).ready(function() {
                             <i class="far fa-calendar-alt"></i>
                           </span>
                         </div>
-                        <input type="text" class="form-control float-right" disabled id="data_inicial" value="" name="data_inicial" placeholder="Data inicial..">
+                        <input type="text" class="form-control float-right date-picker" disabled id="data_inicial" value="" name="data_inicial" placeholder="Data inicial..">
                     </div>
                 </div>
                 <div class="col-sm-2">
@@ -381,10 +339,8 @@ $(document).ready(function() {
                 </button>
             </div>
             <div class="modal-body">
-                <div class="alert alert-danger print-error-msg" style="display:none">
-                    <ul></ul>
-                </div>
                 <form id="ItemForm" name="ItemForm" class="form-horizontal">
+                    @csrf
                    <input type="hidden" name="item_id" id="item_id">
                     <div class="form-group">
                         <label for="description_id" class="col-sm-2 control-label">Descrição<span class="text-danger">*</span></label>
@@ -395,18 +351,16 @@ $(document).ready(function() {
                                     <option value="{{$description_release->id}}">{{$description_release->description}}</option>
                                 @endforeach
                             </select>
+                            {{-- span that show error message --}}
+                            <span id="description_id-error" class="error invalid-feedback" style="display: none;"></span>
                         </div>
                     </div>
-                    {{-- <div class="form-group">
-                        <label for="description" class="col-sm-3 control-label">Valor<span class="text-danger">*</span></label>
-                        <div class="col-sm-12">
-                            <input value="42" id="description" name="description" placeholder="Digite a descrição.." class="form-control">
-                        </div>
-                    </div> --}}
                     <div class="form-group">
                         <label for="amount" class="col-sm-3 control-label">Valor<span class="text-danger">*</span></label>
                         <div class="col-sm-12">
                             <input id="amount" name="amount" placeholder="R$ 0,00" class="form-control">
+                            {{-- span that show error message --}}
+                            <span id="amount-error" class="error invalid-feedback" style="display: none;"></span>
                         </div>
                     </div>
                     <div class="form-group">
@@ -417,6 +371,8 @@ $(document).ready(function() {
                                     <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
                                 </div>
                                 <input id="due_date" name="due_date" class="form-control">
+                                {{-- span that show error message --}}
+                                <span id="due_date-error" class="error invalid-feedback" style="display: none;"></span>
                             </div>
                         </div>
                     </div>

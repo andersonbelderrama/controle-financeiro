@@ -113,38 +113,34 @@ class PaymentInputController extends Controller
     public function store(Request $request)
     {
 
-         $validator = Validator::make($request->all(), [
-             'description_id' => 'required',
-             'amount' => 'required',
-             'due_date' => 'required',
-             //'payment_date' => 'required'
-         ]);
+        $validator = Validator::make($request->all(), [
+            'description_id' => 'required',
+            'amount' => 'required',
+            'due_date' => 'required',
+            //'payment_date' => 'required'
+        ]);
+        
+        
+        if ($request->payment_date != null) {
+            $payment_date = implode('-', array_reverse(explode('/', $request->payment_date)));
+        }else{
+            $payment_date = $request->payment_date = null;
+        }
 
 
-         if ($validator->passes()) {
+        if ($validator->passes()) {
 
-            if ($request->payment_date != null) {
-                PaymentInput::updateOrCreate(['id' => $request->item_id],
-                ['description_id' => $request->description_id,
-                'amount' => str_replace(['R$','.',','],['','','.'],$request->amount),
-                'due_date' => implode('-', array_reverse(explode('/', $request->due_date))),
-                'payment_date' => implode('-', array_reverse(explode('/', $request->payment_date)))
+            PaymentInput::updateOrCreate(['id' => $request->item_id],
+            ['description_id' => $request->description_id,
+            'amount' => str_replace(['R$','.',','],['','','.'],$request->amount),
+            'due_date' => implode('-', array_reverse(explode('/', $request->due_date))),
+            'payment_date' => $payment_date
             ]);  
-            }else{
-                PaymentInput::updateOrCreate(['id' => $request->item_id],
-                ['description_id' => $request->description_id,
-                'amount' => str_replace(['R$','.',','],['','','.'],$request->amount),
-                'due_date' => implode('-', array_reverse(explode('/', $request->due_date))),
-                'payment_date' => $request->payment_date = null
-            ]);  
-            }
 
-            
             return response()->json(['success'=>'Registro inserido com sucesso!']);
-			
-         }
+        }
 
-         return response()->json(['error'=>$validator->errors()]);
+        return response()->json(['errors'=>$validator->errors()]);
     }
 
     /**
