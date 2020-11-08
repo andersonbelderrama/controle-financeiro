@@ -43,6 +43,12 @@
 <script>
 $(document).ready(function() {
 
+    $.ajaxSetup({
+       headers:{
+           'X_CSRF_TOKEN': $('meta[name="csrf-token"]').attr('content')
+       }
+    });
+
      //condição do filtro & toggle
      $('#filter-date').click(function(){
         $('.filter-date').slideToggle();

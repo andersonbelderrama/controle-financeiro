@@ -71,7 +71,7 @@ class PaymentOutputController extends Controller
 
                 $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$payment_output->id.'" data-original-title="Edit" class="edit btn btn-primary  btn editItem"><i class="fas fa-edit"></i></a>';
    
-                $btn = $btn.' <a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$payment_output->id.'" data-original-title="Delete" class="btn btn-danger btn deleteItem"><i class="fas fa-times"></i></a>';
+                $btn = $btn.' <a href="javascript:void(0)" data-token="{{ csrf_token() }}" data-toggle="tooltip"  data-id="'.$payment_output->id.'" data-original-title="Delete" class="btn btn-danger btn deleteItem"><i class="fas fa-times"></i></a>';
                 return $btn;
 
             })

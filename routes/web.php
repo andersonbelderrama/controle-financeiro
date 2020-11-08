@@ -28,3 +28,6 @@ Route::resource('payment_outputs', 'App\Http\Controllers\PaymentOutputController
 Route::get('descriptions-data', 'App\Http\Controllers\DescriptionReleaseController@loadData')->name('descriptions.data');
 Route::get('payment_inputs-data', 'App\Http\Controllers\PaymentInputController@loadData')->name('payment_inputs.data');
 Route::get('payment_outputs-data', 'App\Http\Controllers\PaymentOutputController@loadData')->name('payment_outputs.data');
+
+
+Route::get('home-chart', 'App\Http\Controllers\HomeController@chart')->name('home.chart');
