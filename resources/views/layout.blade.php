@@ -279,7 +279,7 @@
     <strong>Copyright &copy; 2020 <a href="https://liderwebsolutions.com.br">Líder Web Solutions</a>.</strong>
     All rights reserved.
     <div class="float-right d-none d-sm-inline-block">
-      <b>Versão</b> 1.0.2-beta
+      <b>Versão</b> 1.0.3-beta
     </div>
   </footer>
 
