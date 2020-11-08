@@ -21,6 +21,8 @@ var novoMes = new Array();
 var Pagamentos = new Array();
 var Recebimentos = new Array();
 
+
+
 $(document).ready(function(){
     /* ChartJS
     * -------
@@ -44,11 +46,12 @@ $(document).ready(function(){
         if(data.tipo == 'recebimento'){
             Recebimentos.push(data.valor);
         }
+
         Mes.push(data.mes_ano);
 
 
         $.each(Mes, function(i, el){
-        if($.inArray(el, novoMes) === -1) novoMes.push(el);
+            if($.inArray(el, novoMes) === -1) novoMes.push(el);
         });
 
         

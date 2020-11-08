@@ -24,11 +24,12 @@ class DescriptionReleaseController extends Controller
 
     public function loadData()
     {
-        $descriptions = DB::table('description_releases')->get();
+        $descriptions = DB::table('description_releases')
+        ->orderBy('description_releases.id', 'desc')
+        ->get();
 
         return Datatables::of($descriptions)
             ->addColumn('action', function ($description) {
-                //return '<a href="#edit-'.$description->id.'" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> Edit</a>';
 
                 $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="'.$description->id.'" data-original-title="Edit" class="edit btn btn-primary btn editItem"><i class="fas fa-edit"></i></a>';
    
@@ -37,19 +38,15 @@ class DescriptionReleaseController extends Controller
 
             })
             ->rawColumns(['action'])
-            ->editColumn('description', function($description){
-                return Str::title($description->description);
-
-            })
             ->editColumn('created_at', function($description){
                 return Carbon::parse($description->created_at)->format('d/m/Y H:m:s');
 
             })
             ->editColumn('type', function($description){
                 if($description->type == 1){
-                    return 'Entrada';
+                    return 'Recebimento';
                 }else{
-                    return 'Saída';
+                    return 'Pagamento';
                 }
             })
             ->make(true);
@@ -69,8 +66,10 @@ class DescriptionReleaseController extends Controller
 
         if ($validator->passes()) {
 
-            DescriptionRelease::updateOrCreate(['id' => $request->item_id],
-            ['type' => $request->type, 'description' => Str::title($request->description)]);  
+            DescriptionRelease::updateOrCreate(['id' => $request->item_id],[
+                'type'          => $request->type, 
+                'description'   => $request->description
+            ]);  
             return response()->json(['success'=>'Registro inserido com sucesso!']);
 			
         }
@@ -103,6 +102,7 @@ class DescriptionReleaseController extends Controller
     public function destroy($id)
     {
         DescriptionRelease::find($id)->delete();
+
      
         return response()->json(['success'=>'Registro deletado com sucesso!']);
     }

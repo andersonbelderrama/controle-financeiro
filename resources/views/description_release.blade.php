@@ -56,6 +56,7 @@ $(document).ready(function() {
         language: {
         "url": "{{ asset('plugins/DataTables/portugues.json') }}"
         },
+        "order": [[ 0, "desc" ]],
         columns: [
             { data: 'id', name: 'id' },
             { data: 'type', name: 'type' },
@@ -90,12 +91,13 @@ $(document).ready(function() {
             $('#ajaxModel').modal('show');
             $('#item_id').val(data.id); //campos
             if(data.type == 1){
-                $("#type1").prop("checked", true);
+                $("#type1").prop("checked", true,).prop( "disabled", true );
+                $("#type2").prop( "disabled", true );
             }else{
-                $("#type2").prop("checked", true);
+                $("#type2").prop("checked", true).prop( "disabled", true );
+                $("#type1").prop( "disabled", true );
             }
             $('#description').val(data.description); //campos
-            console.log(data);
       })
    });
    //fim - editar registro
@@ -103,25 +105,18 @@ $(document).ready(function() {
    //inicio - store registro
    $('#saveBtn').click(function (e) {
         e.preventDefault();
-        
-        //get inputs
-        var _token = $("input[name='_token']").val();
-        var type = $("input[name='type']").val();
-        var description = $("input[name='description']").val();
+
+        var dados = $('#ItemForm').serialize();
     
         $.ajax({
-            data: $('#ItemForm').serialize(),
+            data: dados,
             //data: {_token:_token, type:type, description:description},
             url: "{{ route('descriptions.store') }}",
             type: "POST",
             dataType: 'json',
             success: function (data) {
-                //alert(data.success);
-                //console.log('Success:', data.success);
-                //console.log('Error:', data.error);
 
                 if($.isEmptyObject(data.error)){
-                    //alert(data.success);
 
                     Swal.fire({
                         icon: 'success',
@@ -139,11 +134,7 @@ $(document).ready(function() {
                     printErrorMsg(data.error);
                     $('#saveBtn').html('Salvar');
                 }
-            }   //,
-                //error: function (data) {
-                //    console.log('Error:', data);
-                //    $('#saveBtn').html('Salvar');
-                //}
+            } 
         });
 
         function printErrorMsg (msg) {
@@ -186,20 +177,23 @@ $(document).ready(function() {
             type: "DELETE",
             url: "{{ route('descriptions.store') }}"+'/'+item_id,
             success: function (data) {
+                swalWithBootstrapButtons.fire(
+                'Excluido!',
+                'Seu registro foi excluído.',
+                'success'
+                );
                 table.draw();
+                console.log(data);
             },
             error: function (data) {
                 console.log('Error:', data);
+                swalWithBootstrapButtons.fire(
+                'Ops!',
+                'Você não pode excluir esse item. Entre em contato com administrador do sistema',
+                'warning'
+                )
             }
-            }),
-
-            swalWithBootstrapButtons.fire(
-            'Excluido!',
-            'Seu registro foi excluído.',
-            'success'
-            )
-
-
+            })
         } else if (
             /* Read more about handling dismissals below */
             result.dismiss === Swal.DismissReason.cancel
@@ -274,18 +268,12 @@ $(document).ready(function() {
                         <div class="col-sm-12">
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input type" type="radio" id="type1" name="type" value="1">
-                                <label class="form-check-label">1 - Entrada</label>
+                                <label class="form-check-label">1 - Recebimento</label>
                             </div>
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input type" type="radio" id="type2" name="type" value="2">
-                                <label class="form-check-label">2 - Saída</label>
+                                <label class="form-check-label">2 - Pagamento</label>
                             </div>
-                            
-                            {{-- <select name="type" id="type" class="form-control select2">
-                                <option selected="selected" value="">Selecione uma opção</option>
-                                <option value="1">1 - Entrada</option>
-                                <option value="2">2 - Saída</option>
-                            </select> --}}
                         </div>
                     </div>
                     <div class="form-group">

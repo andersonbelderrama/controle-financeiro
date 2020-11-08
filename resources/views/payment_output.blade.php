@@ -360,7 +360,7 @@ $(document).ready(function() {
                             <select name="description_id" id="description_id" class="form-control select2">
                                 <option selected="selected" value="">Selecione uma opção</option>
                                 @foreach ($description_releases as $description_release)
-                                    <option value="{{$description_release->id}}">{{$description_release->description}}</option>
+                                    <option value="{{$description_release->id}}">{{$description_release->id}} | {{$description_release->description}}</option>
                                 @endforeach
                             </select>
                             {{-- span that show error message --}}

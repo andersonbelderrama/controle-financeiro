@@ -231,18 +231,20 @@ $(document).ready(function() {
             type: "DELETE",
             url: "{{ route('payment_inputs.store') }}"+'/'+item_id,
             success: function (data) {
+
+                swalWithBootstrapButtons.fire(
+                'Excluido!',
+                'Seu registro foi excluído.',
+                'success'
+                )
                 table.draw();
             },
             error: function (data) {
                 console.log('Error:', data);
             }
-            }),
+            })
 
-            swalWithBootstrapButtons.fire(
-            'Excluido!',
-            'Seu registro foi excluído.',
-            'success'
-            )
+            
 
 
         } else if (result.dismiss === Swal.DismissReason.cancel) {
@@ -357,7 +359,7 @@ $(document).ready(function() {
                             <select name="description_id" id="description_id" class="form-control select2">
                                 <option selected="selected" value="">Selecione uma opção</option>
                                 @foreach ($description_releases as $description_release)
-                                    <option value="{{$description_release->id}}">{{$description_release->description}}</option>
+                                    <option value="{{$description_release->id}}">{{$description_release->id}} | {{$description_release->description}}</option>
                                 @endforeach
                             </select>
                             {{-- span that show error message --}}

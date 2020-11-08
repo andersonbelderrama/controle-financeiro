@@ -24,9 +24,9 @@ PROXIMO 22.resumo de valores mensais na pagina input e output
 
 
     --BUG CORRECTION--
-    -corrigir formatação texto view_descrição > coluna_descrição [exemplo: IPTV]
-    -order by, mostrar os ultimos view_descrição
-
-    -select descrições, mostrar codigo view_input e output
-
-    -traduzir mes no chart do dashboard
+        OK-corrigir formatação texto view_descrição > coluna_descrição [exemplo: IPTV]
+        OK-order by, mostrar os ultimos view_descrição
+        OK-validação ao excluir foreing key descrição em uso.
+        OK-ao editar desabilitar edição do campo tipo, validação apenas no front end
+        OK-select descrições, mostrar codigo(id) view_input e output
+        OK-traduzir mes no chart do dashboard
