@@ -14,10 +14,10 @@
     OK 14. validação campos do filtro    
     OK 15. clonar page input para output
     OK 16. criar toggle filtro
-ANDAMENTO 17. mostrar valores no painel
-18. limpar coisas desnecessarias
+    OK 17. mostrar valores no painel
+    OK 18. limpar coisas desnecessarias
 19. configurar login
-20. criar coluna delete para os registros int = null(visivel) | = 1 deletado(não visivel)
+    OK 20. criar coluna delete para os registros int = null(visivel) | = 1 deletado(não visivel)
 21. criar coluna para mostrar registro somente do usuario logado
 PROXIMO 22.resumo de valores mensais na pagina input e output
-PROXIMO 23.configurar graficos
+    OK 23.configurar graficos
