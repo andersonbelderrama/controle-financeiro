@@ -20,10 +20,9 @@ class PaymentInputController extends Controller
      */
     public function index()
     {
-
         $payment_inputs = DB::table('payment_inputs')
         ->join('description_releases', 'payment_inputs.description_id', '=', 'description_releases.id' )
-        ->select('payment_inputs.id','description_releases.description', 'payment_inputs.amount', 'payment_inputs.due_date', 'payment_inputs.payment_date')
+        ->select('payment_inputs.id','description_releases.description','payment_inputs.extra_info', 'payment_inputs.amount', 'payment_inputs.due_date', 'payment_inputs.payment_date')
         ->get();
 
         $description_releases = DB::table('description_releases')
@@ -53,9 +52,10 @@ class PaymentInputController extends Controller
             //filter
             $payment_inputs = DB::table('payment_inputs')
             ->join('description_releases', 'payment_inputs.description_id', '=', 'description_releases.id' )
-            ->select('payment_inputs.id','description_releases.description', 'payment_inputs.amount', 'payment_inputs.due_date', 'payment_inputs.payment_date')
+            ->select('payment_inputs.id','description_releases.description', 'payment_inputs.extra_info', 'payment_inputs.amount', 'payment_inputs.due_date', 'payment_inputs.payment_date')
             ->orderBy('payment_inputs.id', 'desc')
             ->whereBetween('payment_inputs.'.$coluna, [$data_inicial, $data_final])
+            ->whereNull('deleted_at')
             ->get();
 
         }else{
@@ -63,7 +63,8 @@ class PaymentInputController extends Controller
             //all registers
             $payment_inputs = DB::table('payment_inputs')
             ->join('description_releases', 'payment_inputs.description_id', '=', 'description_releases.id' )
-            ->select('payment_inputs.id','description_releases.description', 'payment_inputs.amount', 'payment_inputs.due_date', 'payment_inputs.payment_date')
+            ->select('payment_inputs.id','description_releases.description', 'payment_inputs.extra_info', 'payment_inputs.amount', 'payment_inputs.due_date', 'payment_inputs.payment_date')
+            ->whereNull('deleted_at')
             ->orderBy('payment_inputs.id', 'desc')
             ->get();
         }
@@ -99,6 +100,14 @@ class PaymentInputController extends Controller
                 
              
             })
+            ->editColumn('extra_info', function($payment_input){
+
+                if ($payment_input->extra_info == null) {
+                    return "N/A";
+                }
+                return $payment_input->extra_info;
+             
+            })
             ->rawColumns(['action'])
             ->make(true);
     }
@@ -111,11 +120,11 @@ class PaymentInputController extends Controller
      */
     public function store(Request $request)
     {
-
+        
         $validator = Validator::make($request->all(), [
-            'description_id' => 'required',
-            'amount' => 'required',
-            'due_date' => 'required',
+            'description_id'    => 'required',
+            'amount'            => 'required',
+            'due_date'          => 'required',
         ]);
 
         
@@ -128,11 +137,12 @@ class PaymentInputController extends Controller
 
         if ($validator->passes()) {
 
-            PaymentInput::updateOrCreate(['id' => $request->item_id],
-            ['description_id' => $request->description_id,
-            'amount' => str_replace(['R$','.',','],['','','.'],$request->amount),
-            'due_date' => implode('-', array_reverse(explode('/', $request->due_date))),
-            'payment_date' => $payment_date
+            PaymentInput::updateOrCreate(['id' => $request->item_id], [
+            'description_id'            => $request->description_id,
+            'extra_info'                => $request->extra_info,
+            'amount'                    => str_replace(['R$','.',','],['','','.'],$request->amount),
+            'due_date'                  => implode('-', array_reverse(explode('/', $request->due_date))),
+            'payment_date'              => $payment_date
             ]);  
 
             return response()->json(['success'=>'Registro inserido com sucesso!']);
@@ -161,8 +171,6 @@ class PaymentInputController extends Controller
         }
         
 
-        //dd($payment_input);
-
         return response()->json($payment_input);
     }
 
@@ -174,7 +182,11 @@ class PaymentInputController extends Controller
      */
     public function destroy($id)
     {
-        PaymentInput::find($id)->delete();
+        $result = PaymentInput::find($id);
+
+        $result->deleted_at = Carbon::now();
+
+        $result->save();
      
         return response()->json(['success'=>'Registro deletado com sucesso!']);
     }

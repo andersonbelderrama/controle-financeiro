@@ -21,11 +21,13 @@ class HomeController extends Controller
             //Recebimento Total
             $query_inputs = DB::table('payment_inputs')
             ->whereNotNull('payment_date')
+            ->whereNull('deleted_at')
             ->sum('amount');
 
             //Pagamento Total
             $query_outputs = DB::table('payment_outputs')
             ->whereNotNull('payment_date')
+            ->whereNull('deleted_at')
             ->sum('amount');
 
         $saldo = $query_inputs - $query_outputs;
@@ -35,6 +37,7 @@ class HomeController extends Controller
         //Recebimento Mês Atual
         $recebimentos = DB::table('payment_inputs')
         ->whereNotNull('payment_date')
+        ->whereNull('deleted_at')
         ->whereMonth('payment_date', Carbon::now()->month)
         ->whereYear('payment_date', Carbon::now()->year)
         ->sum('amount');
@@ -43,12 +46,14 @@ class HomeController extends Controller
         //Pagamentos Pendentes
         $pagamentos_p = DB::table('payment_outputs')
         ->whereNull('payment_date')
+        ->whereNull('deleted_at')
         ->sum('amount');
         $v_pagamentos_p = number_format($pagamentos_p, 2, ',', '.');
         
         //Pagamentos Realizados
         $pagamentos_r = DB::table('payment_outputs')
         ->whereNotNull('payment_date')
+        ->whereNull('deleted_at')
         ->whereMonth('payment_date', Carbon::now()->month)
         ->whereYear('payment_date', Carbon::now()->year)
         ->sum('amount');
@@ -67,22 +72,7 @@ class HomeController extends Controller
     }
 
     public function chart(){
-        //  $result = [
-        //      [
-        //          'mes'           => 'Outubro',
-        //          'recebimentos'  => '2550',
-        //          'pagamentos'    => '1880',
-        //      ],
-        //      [
-        //          'mes'           => 'Novembro',
-        //          'recebimentos'  => '3300',
-        //          'pagamentos'    => '500',
-        //      ]
-        //  ];
-        
-            //$teste = Carbon::parse('2020-02-02')->monthName;
-            //
-
+  
         $result = DB::select(DB::Raw("
         
             SELECT a.tipo AS tipo,
@@ -100,7 +90,7 @@ class HomeController extends Controller
 
             FROM payment_inputs
 
-            WHERE payment_date IS NOT NULL
+            WHERE payment_date IS NOT NULL AND deleted_at IS NULL
 
             GROUP BY YEAR(payment_date), MONTH(payment_date)
 
@@ -115,7 +105,7 @@ class HomeController extends Controller
 
             FROM payment_outputs	
 
-            WHERE payment_date IS NOT NULL
+            WHERE payment_date IS NOT NULL AND deleted_at IS NULL
 
             GROUP BY YEAR(payment_date), MONTH(payment_date)
 
@@ -127,13 +117,6 @@ class HomeController extends Controller
         
         "));
 
-
-        //dd($result); 
-
-        //foreach($result as $r){
-            //$r->valor = 'R$ '.$r->valor;
-        //}
-    
         
 
         return response()->json($result);     

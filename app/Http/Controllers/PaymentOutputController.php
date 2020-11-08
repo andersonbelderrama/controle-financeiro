@@ -22,7 +22,7 @@ class PaymentOutputController extends Controller
     {
         $payment_outputs = DB::table('payment_outputs')
         ->join('description_releases', 'payment_outputs.description_id', '=', 'description_releases.id' )
-        ->select('payment_outputs.id','description_releases.description', 'payment_outputs.amount', 'payment_outputs.due_date', 'payment_outputs.payment_date')
+        ->select('payment_outputs.id','description_releases.description','payment_outputs.extra_info', 'payment_outputs.amount', 'payment_outputs.due_date', 'payment_outputs.payment_date')
         ->get();
 
         $description_releases = DB::table('description_releases')
@@ -50,9 +50,10 @@ class PaymentOutputController extends Controller
             //filter
             $payment_outputs = DB::table('payment_outputs')
             ->join('description_releases', 'payment_outputs.description_id', '=', 'description_releases.id' )
-            ->select('payment_outputs.id','description_releases.description', 'payment_outputs.amount', 'payment_outputs.due_date', 'payment_outputs.payment_date')
+            ->select('payment_outputs.id','description_releases.description','payment_outputs.extra_info', 'payment_outputs.amount', 'payment_outputs.due_date', 'payment_outputs.payment_date')
             ->orderBy('payment_outputs.id', 'desc')
             ->whereBetween('payment_outputs.'.$coluna, [$data_inicial, $data_final])
+            ->whereNull('deleted_at')
             ->get();
 
         }else{
@@ -60,7 +61,8 @@ class PaymentOutputController extends Controller
             //all registers
             $payment_outputs = DB::table('payment_outputs')
             ->join('description_releases', 'payment_outputs.description_id', '=', 'description_releases.id' )
-            ->select('payment_outputs.id','description_releases.description', 'payment_outputs.amount', 'payment_outputs.due_date', 'payment_outputs.payment_date')
+            ->select('payment_outputs.id','description_releases.description','payment_outputs.extra_info', 'payment_outputs.amount', 'payment_outputs.due_date', 'payment_outputs.payment_date')
+            ->whereNull('deleted_at')
             ->orderBy('payment_outputs.id', 'desc')
             ->get();
         }
@@ -93,6 +95,14 @@ class PaymentOutputController extends Controller
                     return "Pagamento Pendente";
                 }
             })
+            ->editColumn('extra_info', function($payment_output){
+
+                if ($payment_output->extra_info == null) {
+                    return "N/A";
+                }
+                return $payment_output->extra_info;
+             
+            })
             ->rawColumns(['action'])
             ->make(true);
     }
@@ -121,10 +131,11 @@ class PaymentOutputController extends Controller
         if ($validator->passes()) {
 
             PaymentOutput::updateOrCreate(['id' => $request->item_id],
-            ['description_id' => $request->description_id,
-            'amount' => str_replace(['R$','.',','],['','','.'],$request->amount),
-            'due_date' => implode('-', array_reverse(explode('/', $request->due_date))),
-            'payment_date' => $payment_date
+            ['description_id'   => $request->description_id,
+            'extra_info'   => $request->extra_info,
+            'amount'            => str_replace(['R$','.',','],['','','.'],$request->amount),
+            'due_date'          => implode('-', array_reverse(explode('/', $request->due_date))),
+            'payment_date'      => $payment_date
             ]);  
 
             return response()->json(['success'=>'Registro inserido com sucesso!']);
@@ -165,7 +176,12 @@ class PaymentOutputController extends Controller
      */
     public function destroy($id)
     {
-        PaymentOutput::find($id)->delete();
+
+        $result = PaymentOutput::find($id);
+
+        $result->deleted_at = Carbon::now();
+
+        $result->save();
      
         return response()->json(['success'=>'Registro deletado com sucesso!']);
     }

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class PaymentInput extends Model
 {
     protected $fillable = [
-        'description_id','amount','due_date','payment_date'
+        'description_id','extra_info','amount','due_date','payment_date'
     ];
 
 }

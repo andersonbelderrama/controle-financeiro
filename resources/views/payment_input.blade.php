@@ -126,6 +126,7 @@ $(document).ready(function() {
         columns: [
             { data: 'id', name: 'id' },
             { data: 'description', name: 'description' },
+            { data: 'extra_info', name: 'extra_info' },
             { data: 'amount', name: 'amount' },
             { data: 'due_date', name: 'due_date' },
             { data: 'payment_date', name: 'payment_date' },
@@ -157,6 +158,7 @@ $(document).ready(function() {
             $('#ajaxModel').modal('show');
             $('#item_id').val(data.id); 
             $(".select2").val(data.description_id).trigger('change'); 
+            $('#extra_info').val(data.extra_info); 
             $('#amount').val(data.amount); 
             $('#due_date').val(data.due_date); 
             $('#payment_date').val(data.payment_date); 
@@ -310,6 +312,7 @@ $(document).ready(function() {
                     <tr>
                         <th width="5%" >#</th>
                         <th>Descrição</th>
+                        <th>Comentário</th>
                         <th>Valor</th>
                         <th>Previsão</th>
                         <th>Recebido</th>
@@ -318,6 +321,7 @@ $(document).ready(function() {
                 </thead>
                 <tbody>
                     <tr>
+                        <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -358,6 +362,12 @@ $(document).ready(function() {
                             </select>
                             {{-- span that show error message --}}
                             <span id="description_id-error" class="error invalid-feedback" style="display: none;"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="extra_info" class="col-sm-3 control-label">Comentário</label>
+                        <div class="col-sm-12">
+                            <input id="extra_info" name="extra_info" placeholder="Digite informação extra.." class="form-control">
                         </div>
                     </div>
                     <div class="form-group">
