@@ -15,7 +15,7 @@
 
 ## Instalação
 
-- Importar o banco de dados encontrado na raiz do projeto com nome "bd_v1.0.3-beta.sql" para o seu servido MYSQL.
+- Importar o banco de dados encontrado na raiz do projeto com nome "bd_v1.0.3-beta.sql" para o seu servidor MYSQL.
 - Pode ser utilizado localmente com o proprio servidor do laravel, indo até a raiz do projeti executando no terminal/cmd "php artisan serve"
 - Pode ser usado em hospedagens compartilhadas. (Caso tenha dúvida, entre em contato: andersonbelderrama@gmail.com)
 
