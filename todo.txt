@@ -21,3 +21,12 @@
 21. criar coluna para mostrar registro somente do usuario logado
 PROXIMO 22.resumo de valores mensais na pagina input e output
     OK 23.configurar graficos
+
+
+    --BUG CORRECTION--
+    -corrigir formatação texto view_descrição > coluna_descrição [exemplo: IPTV]
+    -order by, mostrar os ultimos view_descrição
+
+    -select descrições, mostrar codigo view_input e output
+
+    -traduzir mes no chart do dashboard
