@@ -3,7 +3,7 @@
 
 ## Sobre Controle Financeiro
 
-É uma aplicação desenvolvida utilizando o framework Laravel & template AdminLTE, tem como foco inicial gerenciamento financeiro individual ou uma pequena familia. Estamos na versão beta e por enquanto com função simples:
+É uma aplicação desenvolvida utilizando o framework Laravel & template AdminLTE, tem como foco inicial gerenciamento financeiro individual ou de uma pequena familia. Estamos na versão beta e por enquanto com função simples:
 
 - Dashboard     | Possui um resumo financeiro como valor(R$) saldo,contas pendentes,pagamentos efetuado no mês, etc.
 - Dashboard     | Conta também com um grafico comparativo entre meses.
