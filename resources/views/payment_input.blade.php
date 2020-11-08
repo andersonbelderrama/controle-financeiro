@@ -297,7 +297,7 @@ $(document).ready(function() {
                             <i class="far fa-calendar-alt"></i>
                           </span>
                         </div>
-                        <input type="text" class="form-control float-right" disabled id="data_final" name="data_final" placeholder="Data final..">
+                        <input type="text" class="form-control float-right date-picker" disabled id="data_final" name="data_final" placeholder="Data final..">
                     </div>
                 </div>
                 <div class="col-sm-2">
